@@ -320,7 +320,7 @@
     </style>
 
     <div class="container">
-        <div id="user-container" style="color: #fff">
+        {{-- <div id="user-container" style="color: #fff">
             <h3>Connected Users</h3>
             <div id="user-container">
                 @foreach ($connectedUsers as $connectedUser)
@@ -329,7 +329,7 @@
                     </div>
                 @endforeach
             </div>
-        </div>
+        </div> --}}
 
 
         <h5 class="chat-with-all">Chat with all</h5>
@@ -350,13 +350,13 @@
                                 placeholder="Search users">
                             <i class="bi bi-search search-icon"></i>
                         </div>
-                        @forelse ($users as $user)
+                        @forelse ($connectedUsers as $user)
                             <a href="{{ route('messages.send.user', ['id' => $user->id]) }}">
                                 <div class="user-list">
                                     <div class="chat-item">
                                         <input id="userId" type="hidden" value="{{ auth()->user()->id }}">
-                                        <img src="{{ asset('/avatars/man.png') }}" alt="{{ $user->name }}" class="avatar">
-                                        <h6>{{ $user->name }}</h6>
+                                        <img src="{{ asset('/avatars/man.png') }}" alt="{{ $user->user->name }}" class="avatar">
+                                        <h6>{{ $user->user->name }}</h6>
                                     </div>
                                 </div>
                             </a>
@@ -399,7 +399,6 @@
     <script>
 
 const socket = io('http://192.168.10.14:3000');
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 const form = document.getElementById('chat-input-form');
 const input = document.getElementById('chat-input');

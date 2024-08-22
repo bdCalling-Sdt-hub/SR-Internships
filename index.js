@@ -1,8 +1,10 @@
 const express = require('express');
 const { createServer } = require('http');
+const axios = require('axios');
 
 const app = express();
 const server = createServer(app);
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 const io = require('socket.io')(server, {
     cors: {
@@ -10,12 +12,13 @@ const io = require('socket.io')(server, {
     }
 });
 
+let connectedUsers = [];
+
 app.get('/test', (req, res) => {
     res.send('');
 });
 
-let connectedUsers = [];
-
+// Handle socket connections
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
@@ -53,4 +56,13 @@ io.on('connection', (socket) => {
             console.error('Error removing user:', error);
         }
     });
+
+    socket.on('chatMessage', (data) => {
+        io.emit('chatMessage', data);
+        // console.log(data)
+    });
+});
+
+server.listen(3000, "192.168.10.14", () => {
+    console.log('server running at http://192.168.10.14:3000');
 });
