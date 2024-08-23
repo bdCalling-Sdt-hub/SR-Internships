@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Auth;
 class ChatController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
+        $users = User::where("status",1)->get();
         $connectedUsers = ConnectedUser::with('user')->get();
-        $users = User::where("id", "!=", Auth::user()->id)->where("status",1)->get();
         $messages = Message::orderBy('created_at', 'asc')->get();
         return view('backend.layouts.chat.chat', compact('users','connectedUsers', 'messages'));
     }
@@ -24,11 +24,12 @@ class ChatController extends Controller
     {
         $connectedUsers = ConnectedUser::with('user')->get();
         $messages = Message::orderBy('created_at', 'asc')->get();
-        return view('backend.layouts.chat.chat', compact('connectedUsers','messages',));
+
+
+        return view('backend.layouts.chat.chat', compact('connectedUsers','messages'));
     }
     public function sendMessage(Request $request)
     {
-        // dd($request->all());
         $message = Message::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $request->receiver_id,
