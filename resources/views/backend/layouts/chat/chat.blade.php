@@ -224,29 +224,29 @@
         }
 
         /* .message.sent {
-                background-color: #F4B5BA;
-                color: #333;
-                margin-bottom: 15px;
-                padding: 15px;
-                border-radius: 7px 7px 0px 7px;
-                max-width: 75%;
-                font-size: 16px;
-                line-height: 1.4;
-                margin-left: auto;
-            }
+                        background-color: #F4B5BA;
+                        color: #333;
+                        margin-bottom: 15px;
+                        padding: 15px;
+                        border-radius: 7px 7px 0px 7px;
+                        max-width: 75%;
+                        font-size: 16px;
+                        line-height: 1.4;
+                        margin-left: auto;
+                    }
 
-            .message.received {
-                background-color: #B0E2EC;
-                color: #333;
-                align-self: flex-start;
-                margin-bottom: 15px;
-                padding: 15px;
-                border-radius: 7px 7px 7px 0px;
-                max-width: 75%;
-                font-size: 16px;
-                line-height: 1.4;
-                margin-right: auto;
-            } */
+                    .message.received {
+                        background-color: #B0E2EC;
+                        color: #333;
+                        align-self: flex-start;
+                        margin-bottom: 15px;
+                        padding: 15px;
+                        border-radius: 7px 7px 7px 0px;
+                        max-width: 75%;
+                        font-size: 16px;
+                        line-height: 1.4;
+                        margin-right: auto;
+                    } */
         .message.sent {
             background-color: #F4B5BA;
             color: #333;
@@ -307,6 +307,11 @@
             /* Align the timestamp to the right */
         }
 
+        .chat-list,
+        #chat-messages {
+            scroll-behavior: smooth;
+        }
+
         @media (max-width: 768px) {
             .row {
                 flex-direction: column;
@@ -319,121 +324,130 @@
         }
     </style>
 
-    <div class="container">
-        {{-- <div id="user-container" style="color: #fff">
-            <h3>Connected Users</h3>
-            <div id="user-container">
-                @foreach ($connectedUsers as $connectedUser)
-                    <div class="user-item">
-                        {{ $connectedUser->user->name }}
+<div class="container">
+    <h5 class="chat-with-all">Chat with all</h5>
+    <ul class="nav nav-underline message-tap">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">All messages</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Unread</a>
+        </li>
+    </ul>
+    <div class="chat-box-area">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="chat-list">
+                    <div class="search-container">
+                        <input type="search" id="user-search" class="form-control search-input"
+                            placeholder="Search users">
+                        <i class="bi bi-search search-icon"></i>
                     </div>
-                @endforeach
-            </div>
-        </div> --}}
 
-
-        <h5 class="chat-with-all">Chat with all</h5>
-        <ul class="nav nav-underline message-tap">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">All messages</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Unread</a>
-            </li>
-        </ul>
-        <div class="chat-box-area">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="chat-list">
-                        <div class="search-container">
-                            <input type="search" id="user-search" class="form-control search-input"
-                                placeholder="Search users">
-                            <i class="bi bi-search search-icon"></i>
-                        </div>
-                        @forelse ($connectedUsers as $user)
-                            <a href="{{ route('messages.send.user', ['id' => $user->id]) }}">
-                                <div class="user-list">
-                                    <div class="chat-item">
-                                        <input id="userId" type="hidden" value="{{ auth()->user()->id }}">
-                                        <img src="{{ asset('/avatars/man.png') }}" alt="{{ $user->user->name }}" class="avatar">
-                                        <h6>{{ $user->user->name }}</h6>
-                                    </div>
+                    <input id="userId" type="hidden" value="{{ auth()->user()->id }}">
+                    @forelse ($connectedUsers as $user)
+                        <a href="{{ route('messages.show' , $user->user->id )}}">
+                        <input type="hidden" id="receiver_id" name="receiver_id" value="{{ $user->user->id }}">
+                            <div class="user-list">
+                                <div class="chat-item">
+                                    <img src="{{ asset('/avatars/man.png') }}" alt="{{ $user->user->name }}"
+                                        class="avatar">
+                                    <h6>{{ $user->user->name }} </h6>
                                 </div>
-                            </a>
-                        @empty
-                            <p class="text-white">No users found</p>
-                        @endforelse
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="chat-box">
-                        <div id="chat-messages">
-                            @foreach ($messages as $message)
-                                <div class="message {{ $message->is_sent ? 'sent' : 'received' }}">
-                                    {{ $message->content }}
-                                    <span class="timestamp">{{ $message->created_at->format('h:i A') }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                        <form id="chat-input-form" class="chat-input-form" action="{{ route('messages.send') }}"
-                            method="POST">
-                            @csrf
-                            {{-- <input type="hidden" value="{{auth()->user()->id}}" name="user_id"> --}}
-                            {{-- <input type="hidden" value="{{ }}" name="user_id"> --}}
-                            <input type="text" id="chat-input" name="message" class="form-control"
-                                placeholder="Type your message">
-                            <div class="common-class d-flex align-items-center">
-                                <i class="bi bi-camera image-icon"></i>
-                                <button type="submit" class="send-button btn btn-primary">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
                             </div>
-                        </form>
+                        </a>
+                    @empty
+                        <p class="text-white">No users found</p>
+                    @endforelse
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="chat-box">
+                    <div id="chat-messages">
+                        @foreach ($messages as $message)
+                            <div class="message {{ $message->sender_id == auth()->id() ? 'sent' : 'received' }}">
+                                {{ $message->content }}
+                                <span class="timestamp">{{ $message->created_at->format('h:i A') }}</span>
+                            </div>
+                        @endforeach
                     </div>
+
+                    <form id="chat-input-form" class="chat-input-form" action="{{ route('messages.send') }}"
+                        method="POST">
+                        @csrf
+                        <input type="text" id="chat-input" name="message" class="form-control"
+                            placeholder="Type your message">
+                        <div class="common-class d-flex align-items-center">
+                            <i class="bi bi-camera image-icon"></i>
+                            <button type="submit" class="send-button btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const socket = io('http://192.168.10.14:3000');
 
-const socket = io('http://192.168.10.14:3000');
+    const form = document.getElementById('chat-input-form');
+    const input = document.getElementById('chat-input');
+    const messages = document.getElementById('chat-messages');
+    const userId = document.getElementById('userId').value;
+    const receiverInput = document.getElementById('receiver_id');
 
-const form = document.getElementById('chat-input-form');
-const input = document.getElementById('chat-input');
-const messages = document.getElementById('chat-messages');
+    socket.emit('user connected', userId);
 
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (input.value) {
-        socket.emit('chat message', input.value);
-        input.value = '';
-    }
-});
+    // Handle form submission
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = input.value.trim();
+        const receiver_id = receiverInput.value;
+        console.log(receiver_id)
 
-socket.on('chat message', (msg) => {
-    const item = document.createElement('li');
-    item.textContent = msg;
-    messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
-});
-
-const userId = document.getElementById('userId').value; // Assuming you have a hidden input field with userId
-
-// Emit the userId to the Socket.IO server when connected
-socket.emit('user connected', userId);
-
-// Listen for the updated user list from the server
-socket.on('user list', (userList) => {
-    const userContainer = document.getElementById('user-container');
-    userContainer.innerHTML = ''; // Clear the current list
-
-    userList.forEach((user) => {
-        const userElement = document.createElement('div');
-        userElement.textContent = user.name; // Assuming the server sends back an array of user objects
-        userContainer.appendChild(userElement);
+        if (message !== '') {
+            $.ajax({
+                url: form.action,
+                type: 'POST',
+                data: {
+                    _token: $('input[name=_token]').val(),
+                    receiver_id: receiver_id,
+                    message: message,
+                },
+                success: (response) => {
+                    socket.emit('send message', {
+                        message,
+                        receiver_id
+                    });
+                    input.value = ''; // Clear input field
+                },
+                error: (xhr, status, error) => {
+                    console.error('Message could not be sent:', error);
+                }
+            });
+        }
     });
-});
-    </script>
+
+    // Handle receiving messages
+    socket.on('chat message', (message) => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', 'received');
+        messageElement.innerHTML = `${message}<span class="timestamp">${new Date().toLocaleTimeString()}</span>`;
+        messages.appendChild(messageElement);
+        messages.scrollTop = messages.scrollHeight; // Scroll to the bottom
+    });
+
+    // Handle user selection
+    $('.user-link').on('click', function (e) {
+        e.preventDefault();
+        const receiverId = $(this).data('receiver-id');
+        receiverInput.value = receiverId;
+    });
+</script>
+
 @endsection

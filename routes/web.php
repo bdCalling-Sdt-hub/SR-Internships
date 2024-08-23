@@ -19,8 +19,10 @@ use App\Http\Controllers\Backend\DashboardController;
 
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/messages/send', [ChatController::class, 'sendMessage'])->name('messages.send');
-    Route::get('/messages/user/{id}', [ChatController::class, 'sendMessageUser'])->name('messages.send.user');
+    Route::get('/messages/{id}', [ChatController::class, 'messageShow'])->name('messages.show');
+    Route::post('messages/send', [ChatController::class, 'sendMessage'])->name('messages.send');
+
+
 
 
 

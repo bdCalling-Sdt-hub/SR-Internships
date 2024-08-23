@@ -20,27 +20,21 @@ class ChatController extends Controller
         return view('backend.layouts.chat.chat', compact('users','connectedUsers', 'messages'));
     }
 
+    public function messageShow(User $user,$id)
+    {
+        $connectedUsers = ConnectedUser::with('user')->get();
+        $messages = Message::orderBy('created_at', 'asc')->get();
+        return view('backend.layouts.chat.chat', compact('connectedUsers','messages',));
+    }
     public function sendMessage(Request $request)
     {
         // dd($request->all());
-        $request->validate([
-            'message' => 'required|string',
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $request->receiver_id,
+            'content' => $request->message,
         ]);
 
-        $message = new Message();
-        $message->user_id = Auth::id();
-        $message->content = $request->message;
-        $message->is_sent = true;
-        $message->save();
-
-        return redirect()->route('chat.index');
+        return response()->json(['message' => 'Message sent successfully!', 'data' => $message]);
     }
-    // public function sendMessageUser($id)
-    // {
-    //     dd($id);
-    //     // $user= User::where('id', $id)->first();
-    //     // $message = Message::where('user_id', $user->id)->get();
-
-
-    // }
 }

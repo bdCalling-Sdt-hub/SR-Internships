@@ -41,6 +41,18 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on("send message", (data) => {
+        // Broadcast the message to the specified receiver
+        const { message, receiver_id } = data;
+        const receiver = connectedUsers.find(user => user.userId == receiver_id);
+        if (receiver) {
+            io.to(receiver.socketId).emit('chat message', message);
+        }
+
+        // Optionally: emit the message back to the sender's chatbox
+        socket.emit('chat message', message);
+    });
+
     socket.on('disconnect', async () => {
         try {
             await axios.delete(`${API_BASE_URL}/connected-users/${socket.id}`);
@@ -56,13 +68,8 @@ io.on('connection', (socket) => {
             console.error('Error removing user:', error);
         }
     });
-
-    socket.on('chatMessage', (data) => {
-        io.emit('chatMessage', data);
-        // console.log(data)
-    });
 });
 
 server.listen(3000, "192.168.10.14", () => {
-    console.log('server running at http://192.168.10.14:3000');
+    console.log('Server running at http://192.168.10.14:3000');
 });
