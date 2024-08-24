@@ -21,6 +21,8 @@ use App\Http\Controllers\Backend\DashboardController;
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/messages/{id}', [ChatController::class, 'messageShow'])->name('messages.show');
     Route::post('messages/send', [ChatController::class, 'sendMessage'])->name('messages.send');
+    Route::post('image-upload', [ChatController::class, 'uploadImage'])->name('upload.image');
+
 
 
 

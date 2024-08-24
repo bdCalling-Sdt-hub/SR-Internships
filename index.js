@@ -22,8 +22,10 @@ app.get('/test', (req, res) => {
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    // Handle 'user connected' event
     socket.on('user connected', async (userId) => {
         try {
+            // Save the connected user to the database
             const response = await axios.post(`${API_BASE_URL}/connected-users`, {
                 user_id: userId,
                 socket_id: socket.id,
@@ -41,20 +43,29 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Handle 'send message' event
     socket.on("send message", (data) => {
-        // Broadcast the message to the specified receiver
         const { message, receiver_id } = data;
+
+        // Find the receiver's socket ID
         const receiver = connectedUsers.find(user => user.userId == receiver_id);
         if (receiver) {
+            // Send the message to the receiver
             io.to(receiver.socketId).emit('chat message', message);
         }
 
-        // Optionally: emit the message back to the sender's chatbox
+        // Optionally: send the message back to the sender's chatbox
         socket.emit('chat message', message);
     });
-
+    socket.on('imageUploaded', data => {
+        io.emit('newImage', data);
+    });
+    // Handle socket disconnect
     socket.on('disconnect', async () => {
+        console.log('A user disconnected:', socket.id);
+
         try {
+            // Remove the disconnected user from the database
             await axios.delete(`${API_BASE_URL}/connected-users/${socket.id}`);
 
             // Remove the user from the connectedUsers list
