@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('sender_id');
             $table->unsignedBigInteger('receiver_id');
             $table->text('content');
+            $table->text('image')->nullable();
             $table->boolean('is_read')->default(false);
             $table->timestamps();
 

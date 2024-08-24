@@ -41,8 +41,14 @@
                         <div id="chat-messages">
                             @foreach ($messages as $message)
                                 <div class="message {{ $message->sender_id == auth()->id() ? 'sent' : 'received' }}">
-                                    {{ $message->content }}
-                                    <span class="timestamp">{{ $message->created_at->format('h:i A') }}</span>
+                                    @if (!empty($message->content) && empty($message->image))
+                                        {{ $message->content }}
+                                        <span class="timestamp">{{ $message->created_at->format('h:i A') }}</span>
+                                    @elseif (!empty($message->image))
+                                        <img height="200px" src="{{ asset('uploads/chat_images/' . $message->image) }}"
+                                            alt="Image">
+                                        <span class="timestamp">{{ $message->created_at->format('h:i A') }}</span>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
@@ -78,7 +84,7 @@
                         @csrf
                         <div class="mb-3">
                             <label for="image" class="form-label">Choose an image</label>
-                            <input class="form-control" type="file" id="image" name="image" accept="image/*">
+                            <input lass="dropify" data-height="200" class="form-control" type="file" id="image" name="image" accept="image/*">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -90,7 +96,7 @@
         </div>
     </div>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
     <script>
         const socket = io('http://192.168.10.14:3000');
         const form = document.getElementById('chat-input-form');
@@ -101,10 +107,26 @@
 
         socket.emit('user connected', userId);
 
+        $(document).ready(function() {
+            $('.dropify').dropify();
+        });
+
+        $(document).ready(function() {
+            $('#user-search').on('input', function() {
+                let searchQuery = $(this).val().toLowerCase();
+                $('.user-list .chat-item').each(function() {
+                    let userName = $(this).find('h6').text().toLowerCase();
+                    if (userName.indexOf(searchQuery) > -1) {
+                        $(this).closest('.user-list').show(); // Show user list item
+                    } else {
+                        $(this).closest('.user-list').hide(); // Hide user list item
+                    }
+                });
+            });
+        });
 
         document.getElementById('image-upload-form').addEventListener('submit', function(event) {
             event.preventDefault();
-
             let formData = new FormData(this);
             const receiverId = document.getElementById('receiver_id').value;
             formData.append('receiver_id', receiverId);
@@ -132,6 +154,7 @@
                 .catch(error => console.error('Error:', error));
         });
         socket.on('newImage', function(data) {
+            console.log(data)
             const messageElement = document.createElement('div');
             messageElement.classList.add('message', 'received');
             const img = document.createElement('img');

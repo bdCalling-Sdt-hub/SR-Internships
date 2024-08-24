@@ -56,7 +56,6 @@ class ChatController extends Controller
     }
     public function uploadImage(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -66,15 +65,18 @@ class ChatController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/chat_images'), $imageName);
 
-            // Optionally, save the image path to the database along with the message
+            $message = Message::create([
+                'sender_id' => Auth::id(),
+                'receiver_id' => $request->receiver_id,
+                'content' => $request->message ?? '',
+                'image'=> $imageName
+            ]);
 
             return response()->json([
                 'success' => true,
                 'imagePath' => asset('uploads/chat_images/' . $imageName),
             ]);
         }
-
         return response()->json(['success' => false, 'error' => 'Image upload failed']);
     }
-
 }
