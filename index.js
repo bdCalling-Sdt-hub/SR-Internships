@@ -60,6 +60,12 @@ io.on('connection', (socket) => {
     socket.on('imageUploaded', data => {
         io.emit('newImage', data);
     });
+    socket.on('groupCreated', (data) => {
+        io.emit('newGroup', {
+            groupMembers: data.groupMembers,
+            message: 'A new group has been created!'
+        });
+    });
     // Handle socket disconnect
     socket.on('disconnect', async () => {
         console.log('A user disconnected:', socket.id);

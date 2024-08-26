@@ -128,6 +128,12 @@ h6 {
             height: 63vh;
             padding: 20px;
         }
+        .message img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
 
         /* Custom Scroll Bar for chat-messages */
         #chat-messages::-webkit-scrollbar {
@@ -147,7 +153,17 @@ h6 {
         #chat-messages::-webkit-scrollbar-thumb:hover {
             background-color: #007bff;
         }
-
+        .message {
+            max-width: 70%;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 16px;
+            line-height: 1.4;
+            position: relative;
+            display: inline-block;
+            clear: both; /* Ensure messages don't overlap */
+        }
         .chat-input-form {
             position: relative;
             display: flex;
@@ -265,53 +281,29 @@ h6 {
             overflow: hidden;
         }
 
-        /* .message.sent {
-                                background-color: #F4B5BA;
-                                color: #333;
-                                margin-bottom: 15px;
-                                padding: 15px;
-                                border-radius: 7px 7px 0px 7px;
-                                max-width: 75%;
-                                font-size: 16px;
-                                line-height: 1.4;
-                                margin-left: auto;
-                            }
 
-                            .message.received {
-                                background-color: #B0E2EC;
-                                color: #333;
-                                align-self: flex-start;
-                                margin-bottom: 15px;
-                                padding: 15px;
-                                border-radius: 7px 7px 7px 0px;
-                                max-width: 75%;
-                                font-size: 16px;
-                                line-height: 1.4;
-                                margin-right: auto;
-                            } */
         .message.sent {
             background-color: #F4B5BA;
             color: #333;
             margin-bottom: 15px;
             padding: 15px;
-            border-radius: 7px 7px 0 7px;
-            max-width: 75%;
+            border-radius: 15px 15px 0 15px;
+            float: right; /* Align to the right */
+            text-align: right;
         }
 
         .message.received {
             background-color: #D1F7C4;
             color: #333;
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 7px 7px 7px 0;
-            max-width: 75%;
+            border-radius: 15px 15px 15px 0;
+            float: left; /* Align to the left */
+            text-align: left;
         }
 
         .timestamp {
             display: block;
-            font-size: 0.8rem;
-            color: #888;
-            text-align: right;
+            font-size: 12px;
+            color: #999;
             margin-top: 5px;
         }
 

@@ -15,21 +15,15 @@ class ChatController extends Controller
     public function index(Request $request)
     {
         $users = User::where("status",1)->get();
-        $connectedUsers = ConnectedUser::with('user')->get();
-        // dd($connectedUsers);
+        $connectedUsers = ConnectedUser::with('user')->where('user_id', '!=', auth()->user()->id)->get();
         $messages = Message::orderBy('created_at', 'asc')->get();
         return view('backend.layouts.chat.chat', compact('users','connectedUsers', 'messages'));
     }
 
     public function messageShow(User $user, $id)
         {
-            // Retrieve the current user's ID (the one who is logged in)
             $currentUserId = auth()->id();
-
-            // Fetch all connected users with their associated user details
-            $connectedUsers = ConnectedUser::with('user')->get();
-
-            // Fetch messages between the current user and the specific user (with ID $id)
+            $connectedUsers = ConnectedUser::with('user')->where('user_id', '!=', auth()->user()->id)->get();
             $messages = Message::where(function ($query) use ($currentUserId, $id) {
                 $query->where('sender_id', $currentUserId)
                     ->where('receiver_id', $id);
@@ -37,9 +31,6 @@ class ChatController extends Controller
                 $query->where('sender_id', $id)
                     ->where('receiver_id', $currentUserId);
             })->orderBy('created_at', 'asc')->get();
-
-            // dd($messages);
-
             return view('backend.layouts.chat.chat', compact('connectedUsers', 'messages'));
         }
 
