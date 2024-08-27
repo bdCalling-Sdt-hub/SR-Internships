@@ -22,7 +22,6 @@ app.get('/test', (req, res) => {
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    // Handle 'user connected' event
     socket.on('user connected', async (userId) => {
         try {
             // Save the connected user to the database
@@ -32,10 +31,11 @@ io.on('connection', (socket) => {
             });
 
             // Add the user to the connectedUsers list
+            connectedUsers = connectedUsers.filter(user => user.userId !== userId); // Remove previous connection if exists
             connectedUsers.push({ userId, socketId: socket.id });
 
             // Emit the updated user list to all clients
-            io.emit('user list', connectedUsers);
+            io.emit('update users', connectedUsers);
 
             console.log('User saved to the database:', response.data);
         } catch (error) {
@@ -60,30 +60,19 @@ io.on('connection', (socket) => {
     socket.on('imageUploaded', data => {
         io.emit('newImage', data);
     });
-    socket.on('groupCreated', (data) => {
-        io.emit('newGroup', {
-            groupMembers: data.groupMembers,
-            message: 'A new group has been created!'
-        });
+    socket.on('creategroup', (data) => {
+        // Emit the newRoom event to all clients
+        io.emit('newgroup', data);
     });
-    // Handle socket disconnect
-    socket.on('disconnect', async () => {
-        console.log('A user disconnected:', socket.id);
 
-        try {
-            // Remove the disconnected user from the database
-            await axios.delete(`${API_BASE_URL}/connected-users/${socket.id}`);
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
 
-            // Remove the user from the connectedUsers list
-            connectedUsers = connectedUsers.filter(user => user.socketId !== socket.id);
+        // Remove the user from the connectedUsers list
+        connectedUsers = connectedUsers.filter(user => user.socketId !== socket.id);
 
-            // Emit the updated user list to all clients
-            io.emit('user list', connectedUsers);
-
-            console.log('User removed from the database:', socket.id);
-        } catch (error) {
-            console.error('Error removing user:', error);
-        }
+        // Emit the updated user list to all clients
+        io.emit('update users', connectedUsers);
     });
 });
 

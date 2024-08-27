@@ -3,37 +3,51 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConnectedUser;
 use App\Models\Group;
 use App\Models\GroupMember;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
+
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Validate request data
-        $request->validate([
-            'user_ids' => 'required|array',
-            'user_ids.*' => 'exists:users,id',
+        $validated = $request->validate([
+            'groupName' => 'required|string|max:255',
+            'users' => 'required|array',
+            'users.*' => 'exists:users,id'
         ]);
 
         // Create the group
-        $group = Group::create([
-            'name' => 'New Group', // or use $request->input('group_name')
-        ]);
-        if ($group) {
-            $groupMembers =[];
-            foreach ($request->input('user_ids') as $user_id) {
-               $groupMember= GroupMember::create([
-                    'group_id' => $group->id,
-                    'user_id' => $user_id,
-                ]);
-                array_push($groupMembers, $groupMember);
-            }
-            return response()->json(['status' => 'Group created successfully!','data' => $groupMembers]);
-        } else {
-            return response()->json(['status' => 'Failed to create group.'], 500);
+        $group = new Group();
+        $group->name = $validated['groupName'];
+        $group->save();
+
+        // Add users to the group
+        foreach ($validated['users'] as $userId) {
+            GroupMember::create([
+                'group_id' => $group->id,
+                'user_id' => $userId,
+            ]);
         }
+
+        // Fetch group members for response
+        $groupMembers = GroupMember::with('user')->where('group_id', $group->id)->get();
+
+        // Prepare response
+        $response = [
+            'groupName' => $group->name,
+            'groupMembers' => $groupMembers->map(function ($groupUser) {
+                return [
+                    'user_id' => $groupUser->user->id,
+                    'user_name' => $groupUser->user->name,
+                ];
+            })->all(),
+            'status' => 'group created successfully!'
+        ];
+
+        // Return response
+        return response()->json($response);
     }
 }

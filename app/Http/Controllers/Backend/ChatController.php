@@ -15,7 +15,11 @@ class ChatController extends Controller
     public function index(Request $request)
     {
         $users = User::where("status",1)->get();
-        $connectedUsers = ConnectedUser::with('user')->where('user_id', '!=', auth()->user()->id)->get();
+        $connectedUsers = ConnectedUser::select('user_id')
+        ->with('user')
+        ->where('user_id', '!=', auth()->user()->id)
+        ->groupBy('user_id')
+        ->get();
         $messages = Message::orderBy('created_at', 'asc')->get();
         return view('backend.layouts.chat.chat', compact('users','connectedUsers', 'messages'));
     }
@@ -23,7 +27,10 @@ class ChatController extends Controller
     public function messageShow(User $user, $id)
         {
             $currentUserId = auth()->id();
-            $connectedUsers = ConnectedUser::with('user')->where('user_id', '!=', auth()->user()->id)->get();
+            $connectedUsers = ConnectedUser::with('user')
+                                            ->where('user_id', '!=', auth()->user()->id)
+                                            ->get()
+                                            ->unique('user_id');
             $messages = Message::where(function ($query) use ($currentUserId, $id) {
                 $query->where('sender_id', $currentUserId)
                     ->where('receiver_id', $id);
