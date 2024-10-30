@@ -43,7 +43,7 @@
     }
 
     .sidebar-nav .nav-link:hover {
-        background: #DD1122;
+        background: #6e2329;
         color: #fff;
     }
 
@@ -81,8 +81,9 @@
 
 <aside id="sidebar" class="sidebar">
     <a href="{{ route('dashboard') }}">
+        <h2 class="text-bold">SR Internships</h2>
         <div class="logo">
-            <img src="{{ asset('avatars/logo.png') }}" alt="">
+            {{-- <img src="{{ asset('avatars/logo.png') }}" alt=""> --}}
         </div>
     </a>
     <ul class="sidebar-nav" id="sidebar-nav">
@@ -92,13 +93,13 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('chat.index') }}">
-                <i class="bi bi-wechat"></i><span>Chat</span>
+            <a class="nav-link collapsed" href="{{route('internships.index')}}">
+                <i class="bi bi-list-ul"></i><span>Internship Listings</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('admin.logout') }}">
+            <a class="nav-link collapsed" href="{{route('logout')}}">
                 <i class="bi bi-box-arrow-left"></i><span>Logout</span>
             </a>
         </li>

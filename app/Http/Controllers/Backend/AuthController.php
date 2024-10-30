@@ -17,24 +17,24 @@ class AuthController extends Controller
     }
     public function authenticate(Request $request)
     {
-        try{
-
+        try {
             $validator = Validator::make($request->all(), [
-                'email'    => 'required|string:255',
-                'password' => 'required|min:8|max:255|string:255',
+                'email'    => 'required|string|email|max:255', // Added 'email' rule for proper format
+                'password' => 'required|string|min:8|max:255', // Removed redundant ':255'
             ]);
+
+            // Check if validation fails
             if ($validator->fails()) {
-                Toastr::error($validator->getMessageBag()->first());
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+
             $credentials = $request->only('email', 'password');
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
-                if ($user->role == 1) {
-                    Toastr::success('Successfully login.');
-                    return redirect()->route('dashboard');
-                }elseif($user->role ==0){
-                    Toastr::success('Successfully login.');
+
+                if ($user->user_type === 'COMPANY' || $user->user_type === 'SUPER-ADMIN') {
+
+                    Toastr::success('Successfully logged in.');
                     return redirect()->route('dashboard');
                 } else {
                     Auth::logout();
@@ -45,15 +45,15 @@ class AuthController extends Controller
                 Toastr::error('Invalid email or password.');
                 return redirect()->back()->withInput();
             }
-        }catch(\Exception $e){
-           Toastr::error($e->getMessage()->first());
-           return redirect()->back();
+        } catch (\Exception $e) {
+            Toastr::error('An error occurred: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
     public function logout()
     {
         Auth::logout();
         Toastr::success('Successfully Logout');
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 }

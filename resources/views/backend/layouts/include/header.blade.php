@@ -139,12 +139,12 @@
                     data-bs-toggle="dropdown">
                         <img src="{{ auth()->user()->image ? asset('path/to/user/image') : asset('/avatars/man.png') }}" alt="Avatar">
                         <span
-                            class="d-none d-md-block dropdown-toggle ps-2">{{ auth()->user()->name ?? 'no user' }}</span>
+                            class="d-none d-md-block dropdown-toggle ps-2">{{ auth()->user()->full_name ?? 'no user' }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                         <li class="dropdown-header">
                             <h6>{{ auth()->user()->email ?? '' }}</h6>
-                            <span>{{ auth()->user()->name ?? '' }}</span>
+                            <span>{{ auth()->user()->full_name ?? '' }}</span>
                         </li>
                         <li>
                             <hr class="dropdown-divider">

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Real Time Chat App</title>
+  <title>SR Intern</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
   <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -74,5 +74,10 @@
     <script src="https://cdn.jsdelivr.net/npm/dropify/dist/js/dropify.min.js"></script>
     {!! Toastr::message() !!}
     @stack('js')
+
+    <!-- Add this in the <head> section of your master layout -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
 </body>
 </html>
